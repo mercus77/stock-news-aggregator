@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock News Aggregator Pro</title>
+    <style>
+        :root {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --accent-primary: #667eea;
+            --accent-secondary: #764ba2;
+            --success: #48bb78;
+            --danger: #f56565;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #1a202c;
+            --bg-secondary: #2d3748;
+            --bg-card: #2d3748;
+            --text-primary: #f7fafc;
+            --text-secondary: #e2e8f0;
+            --text-muted: #a0aec0;
+            --border-color: #4a5568;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        h1 {
+            color: var(--text-primary);
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        
+        /* Dark Mode Toggle */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .theme-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 30px;
+            transition: 0.4s;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "☀️";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.4s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        input:checked + .slider {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(30px);
+            content: "🌙";
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+        
+        .card:hover {
+            box-shadow: 0 6px 12px var(--shadow);
+        }
+        
+        .card h2 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        /* Watchlist */
+        .watchlist-stocks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .watchlist-item {
+            background: var(--bg-secondary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .watchlist-item a {
+            color: var(--danger);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        /* Buttons */
+        button, .btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #38a169;
+        }
+        
+        /* Search Form */
+        .search-form {
+            display: grid;
+            grid-template-columns: 2fr auto auto auto;
+            gap: 10px;
+        }
+        
+        input[type="text"], select {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+        
+        /* Stock Info Grid */
+        .stock-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stock-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: contain;
+            background: var(--bg-secondary);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stock-header-info h2 {
+            margin: 0;
+        }
+        
+        .stock-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .stock-detail-item {
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stock-detail-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .stock-detail-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .positive {
+            color: var(--success);
+        }
+        
+        .negative {
+            color: var(--danger);
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            margin: 20px 0;
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Articles */
+        .article {
+            background: var(--bg-card);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .article:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px var(--shadow);
+        }
+        
+        .article h3 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .article-meta {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        
+        .article-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+        
+        .article a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .article a:hover {
+            text-decoration: underline;
+        }
+        
+        .stock-tag {
+            display: inline-block;
+            background: var(--accent-primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 8px;
+            font-weight: 600;
+        }
+        
+        /* Watchlist Grid */
+        .watchlist-stocks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .watchlist-stock-card {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-primary);
+        }
+        
+        .watchlist-stock-card h3 {
+            margin: 0 0 10px 0;
+            color: var(--text-primary);
+        }
+        
+        .error {
+            color: var(--danger);
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .stock-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .stock-detail-value {
+                font-size: 24px;
+            }
+            
+            .watchlist-stocks-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            button, .btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header with Dark Mode Toggle -->
+        <div class="header">
+            <h1>📈 Stock News Aggregator Pro</h1>
+            <div class="theme-switch-wrapper">
+                <span style="color: var(--text-secondary);">Theme</span>
+                <label class="theme-switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Watchlist Section -->
+        {% if watchlist %}
+        <div class="card">
+            <h2>📋 My Watchlist</h2>
+            <div class="watchlist-stocks">
+                {% for stock in watchlist %}
+                <div class="watchlist-item">
+                    <strong>{{ stock }}</strong>
+                    <a href="/remove_from_watchlist/{{ stock }}" title="Remove">✕</a>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="/watchlist_news?days_back=7" class="btn btn-success">View All Watchlist News</a>
+        </div>
+        {% endif %}
+        
+        <!-- Search Box -->
+        <div class="card">
+            <form method="POST" action="/search" class="search-form">
+                <input type="text" 
+                       name="stock_symbol" 
+                       placeholder="Enter stock symbol (e.g., META, AAPL, TSLA)" 
+                       value="{{ stock_symbol or '' }}"
+                       required>
+                
+                <select name="days_back">
+                    <option value="1" {% if days_back == 1 %}selected{% endif %}>Last 24 hours</option>
+                    <option value="3" {% if days_back == 3 %}selected{% endif %}>Last 3 days</option>
+                    <option value="7" {% if days_back == 7 or not days_back %}selected{% endif %}>Last 7 days</option>
+                    <option value="14" {% if days_back == 14 %}selected{% endif %}>Last 14 days</option>
+                    <option value="30" {% if days_back == 30 %}selected{% endif %}>Last 30 days</option>
+                </select>
+                
+                <button type="submit" class="btn-primary">Search</button>
+                
+                {% if stock_symbol and stock_symbol not in watchlist %}
+                <button type="submit" formaction="/add_to_watchlist" class="btn-success">
+                    ➕ Watchlist
+                </button>
+                {% endif %}
+            </form>
+            
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Stock Info Card with Logo -->
+        {% if stock_info %}
+        <div class="card">
+            <div class="stock-header">
+                {% if stock_info.logo_url %}
+                <img src="{{ stock_info.logo_url }}" alt="{{ stock_info.symbol }} logo" class="stock-logo">
+                {% else %}
+                <div class="stock-logo" style="display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold;">
+                    {{ stock_info.symbol[:2] }}
+                </div>
+                {% endif %}
+                <div class="stock-header-info">
+                    <h2>{{ stock_info.name }}</h2>
+                    <p style="color: var(--text-muted);">{{ stock_info.symbol }}</p>
+                </div>
+            </div>
+            
+            <div class="stock-details">
+                <div class="stock-detail-item">
+                    <div class="stock-detail-label">Current Price</div>
+                    <div class="stock-detail-value">
+                        {% if stock_info.price != 'N/A' %}
+                            {{ stock_info.currency }} {{ "%.2f"|format(stock_info.price) }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="stock-detail-item">
+                    <div class="stock-detail-label">Change</div>
+                    <div class="stock-detail-value {% if stock_info.change != 'N/A' %}{{ 'positive' if stock_info.change > 0 else 'negative' }}{% endif %}">
+                        {% if stock_info.change != 'N/A' %}
+                            {{ "%.2f"|format(stock_info.change) }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="stock-detail-item">
+                    <div class="stock-detail-label">Change %</div>
+                    <div class="stock-detail-value {% if stock_info.change_percent != 'N/A' %}{{ 'positive' if stock_info.change_percent > 0 else 'negative' }}{% endif %}">
+                        {% if stock_info.change_percent != 'N/A' %}
+                            {{ "%.2f"|format(stock_info.change_percent) }}%
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Price Chart -->
+        {% if chart_html %}
+        <div class="card">
+            <h2>📊 Price Chart</h2>
+            <div class="chart-container">
+                {{ chart_html|safe }}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Watchlist Stocks Overview -->
+        {% if stocks_info %}
+        <div class="card">
+            <h2>Watchlist Overview</h2>
+        </div>
+        <div class="watchlist-stocks-grid">
+            {% for info in stocks_info %}
+            <div class="watchlist-stock-card">
+                <h3>{{ info.symbol }}</h3>
+                <p><strong>Price:</strong> 
+                    {% if info.price != 'N/A' %}
+                        {{ info.currency }} {{ "%.2f"|format(info.price) }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+                <p class="{% if info.change != 'N/A' %}{{ 'positive' if info.change > 0 else 'negative' }}{% endif %}">
+                    <strong>Change:</strong> 
+                    {% if info.change != 'N/A' and info.change_percent != 'N/A' %}
+                        {{ "%.2f"|format(info.change) }} ({{ "%.2f"|format(info.change_percent) }}%)
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- News Results -->
+        {% if stock_symbol or viewing_watchlist %}
+            <div class="card">
+                <h2>
+                    {% if viewing_watchlist %}
+                        📰 Latest News for Your Watchlist
+                    {% else %}
+                        📰 Latest News for {{ stock_symbol }}
+                    {% endif %}
+                </h2>
+                <p style="color: var(--text-muted);">Found {{ articles|length }} articles from the last {{ days_back }} day(s)</p>
+            </div>
+            
+            {% if articles %}
+                {% for article in articles %}
+                    <div class="article">
+                        {% if article.related_stock %}
+                            <span class="stock-tag">{{ article.related_stock }}</span>
+                        {% endif %}
+                        <h3>{{ article.title }}</h3>
+                        <div class="article-meta">
+                            <strong>Source:</strong> {{ article.source }} | 
+                            <strong>Published:</strong> {{ article.published }}
+                        </div>
+                        <p class="article-description">{{ article.description }}</p>
+                        <a href="{{ article.url }}" target="_blank">Read full article →</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="card no-results">
+                    <h3>No articles found</h3>
+                    <p>Try adjusting the date range or searching for another stock</p>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <script>
+        // Dark Mode Toggle
+        const toggleSwitch = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            if (currentTheme === 'dark') {
+                toggleSwitch.checked = true;
+            }
+        }
+
+        toggleSwitch.addEventListener('change', function(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+</body>
+</html>
