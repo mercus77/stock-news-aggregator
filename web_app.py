@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__)
-app.secret_key = 'your-secret-key-here-change-this'
+app = Flask(__name__, static_folder='static')
+app.secret_key = '0ba71cc769cc4168beccc40fe037f4fd'
 
 api_key = os.getenv('NEWS_API_KEY')
 news_fetcher = NewsFetcher(api_key)
@@ -94,6 +94,8 @@ def watchlist_news():
                          articles=articles,
                          days_back=days_back,
                          viewing_watchlist=True)
-
+@app.route('/manifest.json')
+def manifest():
+    return app.send_static_file('manifest.json')
 if __name__ == '__main__':
     app.run(debug=True)
