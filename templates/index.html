@@ -1,85 +1,167 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark"> <head>
+<html lang="en" data-theme="dark">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MarketPulse | Stock News Aggregator</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>MarketPulse | Pro Aggregator</title>
     
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a202c">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         :root {
-            --bg-body: #f4f6f9;
+            --bg-body: #f0f2f5;
             --bg-card: #ffffff;
-            --text-main: #2d3748;
+            --bg-input: #ffffff;
+            --text-main: #1a202c;
             --text-muted: #718096;
-            --border-color: #edf2f7;
+            --border-color: #e2e8f0;
             --accent-color: #3182ce;
-            --navbar-bg: #1a202c;
-            --input-bg: #ffffff;
-            --input-text: #2d3748;
+            --success-color: #38a169;
+            --danger-color: #e53e3e;
+            --navbar-bg: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         [data-theme="dark"] {
-            --bg-body: #121417;     /* Very dark charcoal */
-            --bg-card: #1e2227;     /* Slightly lighter for cards */
-            --text-main: #e2e8f0;   /* Off-white text */
+            --bg-body: #0f1115;      /* Deep Charcoal */
+            --bg-card: #1a1d21;      /* Slightly Lighter */
+            --bg-input: #2d3748;
+            --text-main: #edf2f7;
             --text-muted: #a0aec0;
             --border-color: #2d3748;
-            --accent-color: #63b3ed; /* Lighter blue for dark mode visibility */
-            --navbar-bg: #000000;
-            --input-bg: #2d3748;
-            --input-text: #ffffff;
+            --accent-color: #63b3ed;
+            --success-color: #48bb78;
+            --danger-color: #f56565;
+            --navbar-bg: #1a1d21;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
-            transition: background-color 0.3s, color 0.3s;
+            transition: all 0.3s ease;
         }
 
+        /* Navigation */
         .navbar {
-            background-color: var(--navbar-bg) !important;
+            background-color: var(--navbar-bg);
             border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
         }
 
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--text-main) !important;
+            letter-spacing: -0.5px;
+        }
+
+        /* Cards */
         .card {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
         }
 
         .card-header {
-            background-color: rgba(0,0,0,0.03);
+            background-color: transparent;
             border-bottom: 1px solid var(--border-color);
-            color: var(--text-main);
             font-weight: 600;
+            padding: 1rem 1.5rem;
+            color: var(--text-main);
         }
 
-        .form-control, .form-select, .input-group-text {
-            background-color: var(--input-bg);
+        /* Typography */
+        h1, h2, h3, h4, h5 { color: var(--text-main); }
+        .text-muted-custom { color: var(--text-muted) !important; }
+
+        /* Form Elements */
+        .form-control, .form-select {
+            background-color: var(--bg-input);
             border-color: var(--border-color);
-            color: var(--input-text);
+            color: var(--text-main);
+            padding: 0.75rem;
+            border-radius: 8px;
         }
         
         .form-control:focus, .form-select:focus {
-            background-color: var(--input-bg);
-            color: var(--input-text);
+            background-color: var(--bg-input);
+            color: var(--text-main);
             border-color: var(--accent-color);
-            box-shadow: 0 0 0 0.2rem rgba(49, 130, 206, 0.25);
+            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
         }
 
-        .stock-price-huge {
-            font-size: 2.5rem;
+        /* Stock Price Display */
+        .price-huge {
+            font-size: 3rem;
             font-weight: 700;
-            color: var(--accent-color);
+            letter-spacing: -1px;
+            line-height: 1;
         }
 
-        .news-item {
-            border-left: 4px solid var(--accent-color);
+        .change-badge {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
         }
-        
+        .text-up { color: var(--success-color); }
+        .text-down { color: var(--danger-color); }
+        .bg-up-light { background-color: rgba(72, 187, 120, 0.15); color: var(--success-color); }
+        .bg-down-light { background-color: rgba(245, 101, 101, 0.15); color: var(--danger-color); }
+
+        /* News Items */
+        .news-item {
+            transition: transform 0.2s, background-color 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .news-item:hover {
+            transform: translateX(4px);
+            border-left: 3px solid var(--accent-color);
+            background-color: rgba(255,255,255,0.02);
+        }
+        .news-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .news-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--accent-color);
+            border: none;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+        }
+        .btn-outline-danger {
+            color: var(--danger-color);
+            border-color: var(--border-color);
+        }
+        .btn-outline-danger:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
         /* Loading Overlay */
         #loading-overlay {
             display: none;
@@ -93,137 +175,162 @@
             opacity: 0.95;
         }
         
-        /* Custom Scrollbar for that "Tech" feel */
-        ::-webkit-scrollbar {
-            width: 8px;
+        /* Chart container fix for dark mode */
+        .plotly-graph-div {
+            border-radius: 8px;
+            overflow: hidden;
+            background: #ffffff; /* Charts usually need white bg to look right */
         }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-body); 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4a5568; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #718096; 
-        }
-
-        a { color: var(--accent-color); text-decoration: none; }
-        a:hover { text-decoration: underline; }
         
-        .text-muted { color: var(--text-muted) !important; }
+        /* Dark Mode Toggle Switch */
+        .theme-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
     <div id="loading-overlay">
         <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
-        <h5 class="mt-3" style="color: var(--text-main)">Scanning Market Data...</h5>
-        <p class="text-muted small">Fetching latest news and prices</p>
+        <h4 class="mt-4 fw-light">Scanning Market Data...</h4>
+        <p class="text-muted-custom">Aggregating news and prices</p>
     </div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <nav class="navbar sticky-top">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <i class="fas fa-chart-line me-2 text-primary"></i>
-                <span style="color: #fff; font-weight: bold;">Market</span><span style="color: #63b3ed;">Pulse</span>
+                <i class="fas fa-layer-group text-primary me-2"></i>StockNews<span class="fw-light">Pro</span>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/"><i class="fas fa-search me-1"></i> Search</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/watchlist_news?days_back=3"><i class="fas fa-eye me-1"></i> Watchlist</a>
-                    </li>
-                    <li class="nav-item ms-3">
-                        <button class="btn btn-sm btn-outline-light" onclick="toggleTheme()" id="theme-btn">
-                            <i class="fas fa-sun"></i>
-                        </button>
-                    </li>
-                </ul>
+            <div class="d-flex align-items-center gap-3">
+                <a href="/watchlist_news?days_back=7" class="btn btn-sm btn-outline-primary d-none d-md-block">
+                    <i class="fas fa-star me-1"></i> Watchlist News
+                </a>
+                <button class="theme-btn" id="theme-toggle" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container py-4">
         
         <div class="row justify-content-center mb-5">
-            <div class="col-md-8">
-                <div class="card p-4">
-                    <form action="/search" method="POST" onsubmit="showLoading()">
-                        <div class="row g-2">
-                            <div class="col-md-8">
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                    <input type="text" name="stock_symbol" class="form-control form-control-lg" placeholder="Enter Ticker (e.g. NVDA)" required value="{{ stock_symbol if stock_symbol }}">
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <select name="days_back" class="form-select form-select-lg">
-                                    <option value="3" {% if days_back == 3 %}selected{% endif %}>3 Days</option>
-                                    <option value="7" {% if days_back == 7 %}selected{% endif %}>1 Week</option>
-                                    <option value="30" {% if days_back == 30 %}selected{% endif %}>1 Month</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2 d-grid">
-                                <button type="submit" class="btn btn-primary btn-lg">Search</button>
-                            </div>
+            <div class="col-lg-8">
+                <div class="card p-2 border-0 shadow-sm" style="background: var(--bg-card);">
+                    <form action="/search" method="POST" class="d-flex gap-2" onsubmit="showLoading()">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0 text-muted-custom">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" name="stock_symbol" class="form-control border-start-0 shadow-none" 
+                                   placeholder="Search Ticker (e.g. NVDA, AAPL)" 
+                                   value="{{ stock_symbol or '' }}" required style="font-size: 1.1rem;">
                         </div>
+                        <select name="days_back" class="form-select w-auto d-none d-sm-block">
+                            <option value="3" {% if days_back == 3 %}selected{% endif %}>3 Days</option>
+                            <option value="7" {% if days_back == 7 %}selected{% endif %}>1 Week</option>
+                            <option value="30" {% if days_back == 30 %}selected{% endif %}>1 Month</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary px-4">Analyze</button>
                     </form>
                 </div>
+                
+                {% if error %}
+                <div class="alert alert-danger mt-3 d-flex align-items-center" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i> {{ error }}
+                </div>
+                {% endif %}
             </div>
         </div>
 
-        {% if error %}
-        <div class="alert alert-danger shadow-sm" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i> {{ error }}
-        </div>
-        {% endif %}
-
-        {% if stock_symbol or viewing_watchlist %}
-        <div class="row">
+        {% if stock_info or viewing_watchlist %}
+        <div class="row g-4">
             
-            <div class="col-lg-4 mb-4">
+            <div class="col-lg-4">
+                
                 {% if stock_info %}
-                <div class="card sticky-top" style="top: 20px; z-index: 1;">
+                <div class="card mb-3">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h2 class="mb-0" style="color: var(--text-main)">{{ stock_symbol }}</h2>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h1 class="h3 mb-0">{{ stock_info.name }}</h1>
+                                <span class="badge bg-secondary opacity-50">{{ stock_info.symbol }}</span>
+                            </div>
                             {% if not viewing_watchlist %}
-                            <form action="/add_to_watchlist" method="POST" class="d-inline" onsubmit="showLoading()">
-                                <input type="hidden" name="stock_symbol" value="{{ stock_symbol }}">
-                                <button class="btn btn-outline-secondary btn-sm"><i class="far fa-star"></i> Watch</button>
+                            <form action="/add_to_watchlist" method="POST" onsubmit="showLoading()">
+                                <input type="hidden" name="stock_symbol" value="{{ stock_info.symbol }}">
+                                <button class="btn btn-sm btn-outline-secondary rounded-circle" style="width: 32px; height: 32px; padding: 0;">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                             </form>
                             {% endif %}
                         </div>
-                        
-                        <div class="stock-price-huge">
-                            ${{ stock_info.current_price | default('---') }}
-                        </div>
-                        
-                        <hr style="border-color: var(--border-color)">
-                        
-                        <div class="mt-3">
-                            <strong>Sector:</strong> <span class="text-muted">{{ stock_info.sector }}</span><br>
-                            <p class="text-muted small mt-2">
-                                {{ stock_info.summary[:150] }}...
-                            </p>
+
+                        <div class="mt-4">
+                            <div class="price-huge">
+                                {% if stock_info.price != 'N/A' %}
+                                    {{ stock_info.currency }} {{ "%.2f"|format(stock_info.price) }}
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mt-2">
+                                {% if stock_info.change != 'N/A' %}
+                                    <span class="change-badge {% if stock_info.change > 0 %}bg-up-light{% else %}bg-down-light{% endif %}">
+                                        <i class="fas fa-{% if stock_info.change > 0 %}arrow-up{% else %}arrow-down{% endif %} me-1"></i>
+                                        {{ "%.2f"|format(stock_info.change) }} ({{ "%.2f"|format(stock_info.change_percent) }}%)
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted-custom">Market Closed</span>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
                 {% endif %}
 
                 {% if chart_html %}
-                <div class="card mt-3">
-                    <div class="card-header">Price History</div>
-                    <div class="card-body p-1" style="background: #fff; border-radius: 0 0 8px 8px;">
-                        {{ chart_html | safe }}
+                <div class="card mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Price Action</span>
+                        <small class="text-muted-custom">30 Days</small>
+                    </div>
+                    <div class="card-body p-0">
+                        {{ chart_html|safe }}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if watchlist %}
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-list me-2"></i>Your Watchlist
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for symbol in watchlist %}
+                        <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                            <form action="/search" method="POST" class="flex-grow-1" onsubmit="showLoading()">
+                                <input type="hidden" name="stock_symbol" value="{{ symbol }}">
+                                <button type="submit" class="btn btn-link text-decoration-none p-0 fw-bold" style="color: var(--text-main)">
+                                    {{ symbol }}
+                                </button>
+                            </form>
+                            <a href="/remove_from_watchlist/{{ symbol }}" class="text-muted-custom hover-danger">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
                 {% endif %}
@@ -231,92 +338,101 @@
 
             <div class="col-lg-8">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="mb-0"><i class="far fa-newspaper me-2"></i>Recent Intelligence</h4>
-                    <span class="badge bg-secondary">{{ articles|length }} Signals Found</span>
+                    <h3 class="h4 mb-0">Market Intelligence</h3>
+                    <span class="badge bg-primary rounded-pill">{{ articles|length }} Articles</span>
                 </div>
 
                 {% if articles %}
+                    <div class="d-flex flex-column gap-3">
                     {% for article in articles %}
-                    <div class="card news-item mb-3">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <h5 class="card-title" style="color: var(--accent-color)">{{ article.title }}</h5>
-                                <small class="text-muted">{{ article.published_date }}</small>
+                        <div class="card news-item border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    {% if article.related_stock %}
+                                        <span class="badge bg-light text-dark border">{{ article.related_stock }}</span>
+                                    {% endif %}
+                                    <span class="news-meta">
+                                        <i class="far fa-clock me-1"></i> {{ article.published }}
+                                    </span>
+                                </div>
+                                
+                                <a href="{{ article.url }}" target="_blank" class="news-title stretched-link">
+                                    {{ article.title }}
+                                </a>
+                                
+                                <div class="d-flex align-items-center mt-2">
+                                    <span class="badge bg-secondary opacity-75 me-2" style="font-weight: 400;">
+                                        {{ article.source }}
+                                    </span>
+                                </div>
+                                
+                                {% if article.description %}
+                                <p class="text-muted-custom mt-2 mb-0 small line-clamp-2">
+                                    {{ article.description }}
+                                </p>
+                                {% endif %}
                             </div>
-                            <h6 class="card-subtitle mb-2 text-muted">Source: {{ article.publisher }}</h6>
-                            <p class="card-text text-muted">{{ article.summary }}</p>
-                            <a href="{{ article.link }}" target="_blank" class="btn btn-sm btn-outline-primary">Read Analysis &rarr;</a>
+                        </div>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="card py-5 text-center">
+                        <div class="card-body">
+                            <i class="fas fa-newspaper fa-3x text-muted mb-3 opacity-25"></i>
+                            <h5 class="text-muted-custom">No recent news found</h5>
+                            <p class="text-muted-custom small">Try increasing the date range in the search bar.</p>
                         </div>
                     </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="alert alert-info">No recent news found for this timeframe.</div>
                 {% endif %}
             </div>
-
         </div>
         {% endif %}
 
-        {% if watchlist and not stock_symbol and not viewing_watchlist %}
-        <div class="row mt-5">
-            <div class="col-12">
-                <h4 class="mb-3">Your Watchlist</h4>
-                <div class="d-flex gap-3 flex-wrap">
-                    {% for symbol in watchlist %}
-                    <div class="card p-3" style="min-width: 150px;">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong style="font-size: 1.2rem;">{{ symbol }}</strong>
-                            <a href="/remove_from_watchlist/{{ symbol }}" class="text-danger"><i class="fas fa-times"></i></a>
-                        </div>
-                        <form action="/search" method="POST" class="mt-3" onsubmit="showLoading()">
-                            <input type="hidden" name="stock_symbol" value="{{ symbol }}">
-                            <button type="submit" class="btn btn-sm btn-primary w-100">Analyze</button>
-                        </form>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
+        {% if not stock_symbol and not viewing_watchlist and not error %}
+        <div class="text-center mt-5 pt-5 opacity-50">
+            <i class="fas fa-chart-line fa-4x mb-3"></i>
+            <h3>Enter a ticker symbol to start</h3>
+            <p>Real-time data and news aggregation powered by AI</p>
         </div>
         {% endif %}
 
     </div>
 
-    <footer class="text-center text-muted py-4 mt-5" style="border-top: 1px solid var(--border-color)">
-        <small>&copy; 2024 MarketPulse Aggregator.</small>
-    </footer>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
-        // Loading Spinner Logic
+        // 1. Loading Overlay Logic
         function showLoading() {
             document.getElementById('loading-overlay').style.display = 'flex';
         }
 
-        // Dark/Light Mode Logic
-        function toggleTheme() {
-            const html = document.documentElement;
+        // 2. Dark Mode Logic
+        const toggleBtn = document.getElementById('theme-toggle');
+        const icon = toggleBtn.querySelector('i');
+        const html = document.documentElement;
+        
+        // Check saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(savedTheme);
+
+        toggleBtn.addEventListener('click', () => {
             const currentTheme = html.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateIcon(newTheme);
-        }
+            setTheme(newTheme);
+        });
 
-        function updateIcon(theme) {
-            const btn = document.getElementById('theme-btn');
+        function setTheme(theme) {
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            
             if (theme === 'dark') {
-                btn.innerHTML = '<i class="fas fa-sun"></i>';
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
             } else {
-                btn.innerHTML = '<i class="fas fa-moon"></i>';
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
             }
         }
-
-        // Check LocalStorage on load
-        const savedTheme = localStorage.getItem('theme') || 'dark'; // Default to dark
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        updateIcon(savedTheme);
     </script>
 </body>
 </html>
